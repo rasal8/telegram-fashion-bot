@@ -1,12 +1,20 @@
-from telegram.ext import Updater, CommandHandler
+import asyncio
+from telegram import Update
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
+
+BOT_TOKEN = "8754129984:AAF8OGD1odlxGJSJDTsePdudREpAQW44y_Y"
 
 PRODUCTS = {
-    "dress001": "✨ Korean Floral Dress\n\n💰 Price: ₹999\n\n🛍 Shop Now 👇\nhttps://your-affiliate-link.com",
+    "dress001": {
+        "message": "✨ Korean Floral Dress\n\n💰 Price: ₹999\n\n🛍 Shop Now 👇\nhttps://your-affiliate-link.com"
+    },
 
-    "top001": "✨ Korean White Top\n\n💰 Price: ₹799\n\n🛍 Shop Now 👇\nhttps://your-affiliate-link.com"
+    "top001": {
+        "message": "✨ Korean White Top\n\n💰 Price: ₹799\n\n🛍 Shop Now 👇\nhttps://your-affiliate-link.com"
+    }
 }
 
-def start(update, context):
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     code = "default"
 
@@ -16,17 +24,19 @@ def start(update, context):
     product = PRODUCTS.get(code)
 
     if product:
-        update.message.reply_text(product)
+        await update.message.reply_text(product["message"])
     else:
-        update.message.reply_text("Product not found.")
+        await update.message.reply_text("Product not found.")
 
-updater = Updater("8754129984:AAF8OGD1odlxGJSJDTsePdudREpAQW44y_Y", use_context=True)
+async def main():
 
-dp = updater.dispatcher
+    app = ApplicationBuilder().token(BOT_TOKEN).build()
 
-dp.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("start", start))
 
-print("Bot Running...")
+    print("Bot Running...")
 
-updater.start_polling()
-updater.idle()
+    await app.run_polling()
+
+if __name__ == "__main__":
+    asyncio.run(main())
